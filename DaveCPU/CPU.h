@@ -1,17 +1,24 @@
 #pragma once
 #include <cstdint>
+#include <queue>
+#include <string>
 #include "Bus.h"
+
 
 namespace DaveCPU {
 
 	class CPU
 	{
 	public:
-
 		Bus bus;
 		unsigned long int cycles = 0;
 		bool stopExecution = false;
 		uint16_t previousProgramCounter = 0;
+		int fetchingParameter = 0;
+
+		std::string lastAction = "";
+		std::queue<void(CPU::*)()> actionQueue;
+		
 
 		/* Registers */
 		uint16_t rStatusFlags = 0;	// status flags
@@ -40,9 +47,10 @@ namespace DaveCPU {
 		void decode();
 		void execute();
 
-		void step();
-		void stepFor(int stepCount);
+		void fetchParameter1();
+		void fetchParameter2();
 
+		void clockCycle();
 		void run();
 
 		/* Helper Functions */

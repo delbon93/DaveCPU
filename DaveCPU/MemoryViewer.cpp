@@ -59,10 +59,13 @@ namespace DaveCPU {
 				cFG = COLOUR::FG_DARK_GREY;
 				cBG = COLOUR::BG_BLACK;
 			}
-			if (address == attachedCPU->previousProgramCounter) {
+			if (address == attachedCPU->previousProgramCounter - attachedCPU->fetchingParameter) {
 				cBG = COLOUR::BG_DARK_GREEN;
 			}
-
+			if (attachedCPU->fetchingParameter > 0 && address == attachedCPU->previousProgramCounter)
+			{
+				cBG = COLOUR::BG_DARK_YELLOW;
+			}
 			// Draw string
 			std::string str = sstream.str();
 			sstream = std::stringstream();
@@ -106,7 +109,10 @@ namespace DaveCPU {
 	void MemoryViewer::drawCPUState(int x, int y)
 	{
 		int currentX = x + 1, currentY = y + 1;
+		int header = 2;
 
+		DrawString(currentX, currentY, convertString(attachedCPU->lastAction));
+		currentY += header;
 		drawRegister(currentX, currentY++, " pc", 0x01);
 		drawRegister(currentX, currentY++, "acc", 0x02);
 		drawRegister(currentX, currentY++, " sf", 0x00);
@@ -118,14 +124,14 @@ namespace DaveCPU {
 		drawRegister(currentX, currentY++, "ret", 0x08);
 		drawRegister(currentX, currentY++, "sfo", 0x09);
 		drawRegister(currentX, currentY++, " am", 0x0A);
-		currentY = y + 1;
+		currentY = y + 1 + header;
 		currentX += 20;
 		for (uint16_t i = 0; i <= 15; i++) {
 			std::stringstream sstream;
 			sstream << " r" << _HEXDIGIT_(i);
 			drawRegister(currentX, currentY++, sstream.str(), 0x10 + i);
 			if (i == 7) {
-				currentY = y + 1;
+				currentY = y + 1 + header;
 				currentX += 20;
 			}
 		}
@@ -152,7 +158,7 @@ namespace DaveCPU {
 			toNextInstruction -= fElapsedTime;
 			if (toNextInstruction <= 0) {
 				toNextInstruction = instructionTime;
-				attachedCPU->step();
+				attachedCPU->clockCycle();
 			}
 		}
 

@@ -11,10 +11,6 @@ namespace DaveCPU {
 	CPU* setupCPU() {
 		CPU* cpu = new CPU();
 
-		/* Reads values '0x0F00' and '0x010A' from RAM (at
-		 * addresses $2000 and $2001) and adds them together.
-		 * Then stores the result in RAM at address $2002.
-		 */
 		std::vector<uint16_t> program1{
 			0xF021, 0x2000,			// REL $0x2000
 			0x0161, 0x0000,			// LTA &0
@@ -34,14 +30,10 @@ namespace DaveCPU {
 			0xFF00					// RTN
 		};
 
-		std::vector<uint16_t> data { };
+		std::vector<uint16_t> data{ };
 
 		cpu->bus.eeprom.flash(program2);
 		cpu->bus.ram.writeBulk(0x2000, data);
-		/*
-		std::cout << "\t< EEPROM >" << std::endl << cpu.bus.dumpMemoryRange(0x0000, 0x0017, 8) << std::endl << std::endl;
-		std::cout << "\t< RAM >" << std::endl << cpu.bus.dumpMemoryRange(0x2000, 0x2017, 8) << std::endl << std::endl;
-		*/
 
 		return cpu;
 	}
@@ -51,7 +43,7 @@ int main() {
 	DaveCPU::CPU* cpu = DaveCPU::setupCPU();
 	DaveCPU::MemoryViewer memoryViewer;
 	memoryViewer.attach(cpu);
-	memoryViewer.setInstructionTime(0.5);
+	memoryViewer.setInstructionTime(1);
 	memoryViewer.ConstructConsole(160, 50, 8, 16);
 	memoryViewer.Start();
 

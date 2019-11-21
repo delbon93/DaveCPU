@@ -5,6 +5,8 @@ namespace DaveCPU {
 	CPU::CPU()
 	{
 		bus = Bus();
+		actionQueue.push(&CPU::fetch);
+		actionQueue.push(&CPU::decode);
 	}
 
 	uint16_t CPU::readAbsolute(uint16_t address)
@@ -29,15 +31,33 @@ namespace DaveCPU {
 
 	void CPU::fetch()
 	{
-		cycles++;
+		previousProgramCounter = rProgramCounter;
 		rFetch = bus.read(rProgramCounter++);
+		lastAction = "Fetch";
+		fetchingParameter = 0;
+	}
+	
+	void CPU::fetchParameter1()
+	{
+		previousProgramCounter = rProgramCounter;
+		rFetch = bus.read(rProgramCounter++);
+		rParameter1 = rFetch;
+		fetchingParameter++;
+		lastAction = "Fetch Parameter 1";
+	}
+
+	void CPU::fetchParameter2()
+	{
+		previousProgramCounter = rProgramCounter;
+		rFetch = bus.read(rProgramCounter++);
+		rParameter2 = rFetch;
+		fetchingParameter++;
+		lastAction = "Fetch Parameter 2";
 	}
 
 	void CPU::decode()
 	{
-		cycles++;
 		// get opcode
-		fetch();
 		rInstruction = (rFetch >> 8) & 0x00FF;
 		// get address modes
 		rAddressMode = (rFetch >> 2) & 0x0007;
@@ -45,18 +65,17 @@ namespace DaveCPU {
 		// get parameter count
 		uint8_t paramCount = rFetch & 0x0003;
 		if (paramCount > 0) {
-			fetch();
-			rParameter1 = rFetch;
+			actionQueue.push(&CPU::fetchParameter1);
 			if (paramCount > 1) {
-				fetch();
-				rParameter2 = rFetch;
+				actionQueue.push(&CPU::fetchParameter2);
 			}
 		}
+		actionQueue.push(&CPU::execute);
+		lastAction = "Decode";
 	}
 
 	void CPU::execute()
 	{
-		cycles++;
 		switch (rInstruction) {
 		case opLTA: LTA(); break; case opLTR: LTR(); break; case opSTM: STM(); break; case opSTR: STR(); break;
 		case opADD: ADD(); break; case opADC: ADC(); break; case opSUB: SUB(); break; case opMUL: MUL(); break;
@@ -68,23 +87,30 @@ namespace DaveCPU {
 		case opREL: REL(); break; case opCSR: CSR(); break; case opRTN: RTN(); break; case opSKP: SKP(); break;
 		default: SKP();
 		}
+		actionQueue.push(&CPU::fetch);
+		actionQueue.push(&CPU::decode);
+		lastAction = "Execute";
 	}
 
-	void CPU::step()
-	{
-		previousProgramCounter = rProgramCounter;
-		decode();
-		execute();
-	}
 
-	void CPU::stepFor(int stepCount)
+	void CPU::clockCycle()
 	{
-		for (auto i = 0; i < stepCount; i++) step();
+		cycles++;
+		if (actionQueue.empty())
+		{
+			stopExecution = true;
+		}
+		else
+		{
+			void(CPU:: * action)() = actionQueue.front();
+			actionQueue.pop();
+			(this->*action)();
+		}
 	}
 
 	void CPU::run()
 	{
-		while (!stopExecution) step();
+		while (!stopExecution) clockCycle();
 	}
 
 	/* INSTRUCTIONS */
@@ -300,7 +326,7 @@ namespace DaveCPU {
 		if (getAddressMode(1) == 0) data = rAccumulator;
 		else if (getAddressMode(1) == 1) data = rParameter2;
 		else if (getAddressMode(1) == 2) data = getRegister(rParameter2);
-		
+
 		rAccumulator = data << shift;
 	}
 
