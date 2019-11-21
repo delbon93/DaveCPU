@@ -150,6 +150,11 @@ namespace DaveCPU {
 
 		// Last action the CPU performed
 		DrawString(currentX, currentY, convertString(attachedCPU->lastAction));
+
+		// Passed cycles
+		auto sstream = std::stringstream();
+		sstream << "Cycles: " << attachedCPU->cycles;
+		DrawString(currentX + 20, currentY, convertString(sstream.str()));
 		currentY += header;
 		
 		// All internal register values
@@ -169,7 +174,7 @@ namespace DaveCPU {
 
 		// Data registers
 		for (uint16_t i = 0; i <= 15; i++) {
-			std::stringstream sstream;
+			sstream = std::stringstream();
 			sstream << " r" << _HEXDIGIT_(i);
 			drawRegister(currentX, currentY++, sstream.str(), 0x10 + i);
 			if (i == 7) {
