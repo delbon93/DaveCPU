@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "RAM.h"
 #include "EEPROM.h"
 

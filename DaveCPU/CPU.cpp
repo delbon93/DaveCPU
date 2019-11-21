@@ -2,29 +2,29 @@
 
 namespace DaveCPU {
 
-	CPU::CPU()
+	CPU::CPU(): rDataRegisters{0}
 	{
 		bus = Bus();
 		actionQueue.push(&CPU::fetch);
 		actionQueue.push(&CPU::decode);
 	}
 
-	uint16_t CPU::readAbsolute(uint16_t address)
+	uint16_t CPU::readAbsolute(const uint16_t address)
 	{
 		return bus.read(address);
 	}
 
-	void CPU::writeAbsolute(uint16_t address, uint16_t data)
+	void CPU::writeAbsolute(const uint16_t address, const uint16_t data)
 	{
 		bus.write(address, data);
 	}
 
-	uint16_t CPU::readRelative(uint16_t address)
+	uint16_t CPU::readRelative(const uint16_t address)
 	{
 		return bus.read(address + rRelativeAddress);
 	}
 
-	void CPU::writeRelative(uint16_t address, uint16_t data)
+	void CPU::writeRelative(const uint16_t address, const uint16_t data)
 	{
 		bus.write(address + rRelativeAddress, data);
 	}
@@ -33,7 +33,7 @@ namespace DaveCPU {
 	{
 		previousProgramCounter = rProgramCounter;
 		rFetch = bus.read(rProgramCounter++);
-		lastAction = "Fetch";
+		lastAction = "Fetch Instruction";
 		fetchingParameter = 0;
 	}
 	
@@ -63,7 +63,7 @@ namespace DaveCPU {
 		rAddressMode = (rFetch >> 2) & 0x0007;
 		rAddressMode += (rFetch << 3) & 0x0700;
 		// get parameter count
-		uint8_t paramCount = rFetch & 0x0003;
+		const uint8_t paramCount = rFetch & 0x0003;
 		if (paramCount > 0) {
 			actionQueue.push(&CPU::fetchParameter1);
 			if (paramCount > 1) {
@@ -102,7 +102,7 @@ namespace DaveCPU {
 		}
 		else
 		{
-			void(CPU:: * action)() = actionQueue.front();
+			const auto action = actionQueue.front();
 			actionQueue.pop();
 			(this->*action)();
 		}
@@ -115,17 +115,17 @@ namespace DaveCPU {
 
 	/* INSTRUCTIONS */
 
-	uint8_t CPU::getAddressMode(uint8_t param)
+	uint8_t CPU::getAddressMode(const uint8_t param) const
 	{
 		switch (param) {
 		case 0:
-			return (uint8_t)(rAddressMode >> 8);
+			return static_cast<uint8_t>(rAddressMode >> 8);
 		default:
-			return (uint8_t)(rAddressMode & 0x00FF);
+			return static_cast<uint8_t>(rAddressMode & 0x00FF);
 		}
 	}
 
-	uint16_t CPU::getRegister(uint16_t registerCode)
+	uint16_t CPU::getRegister(const uint16_t registerCode)
 	{
 		switch (registerCode) {
 		case 0: return rStatusFlags;
@@ -145,7 +145,7 @@ namespace DaveCPU {
 		}
 	}
 
-	void CPU::setRegister(uint16_t registerCode, uint16_t data)
+	void CPU::setRegister(const uint16_t registerCode, const uint16_t data)
 	{
 		switch (registerCode) {
 		case 0: rStatusFlags = data; break;
@@ -196,10 +196,10 @@ namespace DaveCPU {
 		if (getAddressMode(0) == 1) setRegister(rParameter1, rAccumulator);
 	}
 
-	uint16_t CPU::addAndSetCarry(int a, int b) {
-		int uncropped = a + b;
+	uint16_t CPU::addAndSetCarry(const int a, const int b) {
+		const auto uncropped = a + b;
 		uint16_t result = (uint16_t)(uncropped & 0xFFFF);
-		int remainder = (uncropped >> 16);
+		auto remainder = (uncropped >> 16);
 		if (remainder != 0) rStatusFlags |= 0b1100;
 		return result;
 	}
@@ -349,22 +349,22 @@ namespace DaveCPU {
 		else if (getAddressMode(0) == 3) rProgramCounter -= rParameter1;
 	}
 
-	bool CPU::isZeroSet()
+	bool CPU::isZeroSet() const
 	{
 		return (rStatusFlags & 0x0002) != 0;
 	}
 
-	bool CPU::isSignSet()
+	bool CPU::isSignSet() const
 	{
 		return (rStatusFlags & 0x0001) != 0;
 	}
 
-	bool CPU::isOverflowSet()
+	bool CPU::isOverflowSet() const
 	{
 		return (rStatusFlags & 0x0004) != 0;
 	}
 
-	bool CPU::isCarrySet()
+	bool CPU::isCarrySet() const
 	{
 		return (rStatusFlags & 0x0008) != 0;
 	}

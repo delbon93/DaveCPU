@@ -7,7 +7,7 @@ namespace DaveCPU {
 		memory = std::vector<uint16_t>(0x2000);
 	}
 
-	uint16_t EEPROM::read(uint16_t address)
+	uint16_t EEPROM::read(const uint16_t address)
 	{
 		if (address < 0x2000)
 			return memory[address];
@@ -18,7 +18,7 @@ namespace DaveCPU {
 
 	void EEPROM::flash(std::vector<uint16_t>& image)
 	{
-		int endAddress = image.size() < 0x2000 ? (int)image.size() : 0x2000;
+		const auto endAddress = image.size() < 0x2000 ? static_cast<int>(image.size()) : 0x2000;
 		for (auto addr = 0; addr < endAddress; addr++) {
 			memory[addr] = image[addr];
 		}

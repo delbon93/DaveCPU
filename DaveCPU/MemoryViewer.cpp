@@ -2,19 +2,25 @@
 #include <sstream>
 #include "MemoryViewer.h"
 
-
+// Converts a value to a 4 wide hex value string
 #define _HEX_(value)		std::uppercase << std::setfill('.') << std::setw(sizeof(uint16_t) * 2) << std::hex << value
+// Converts a value to a 1 wide hex digit string
 #define _HEXDIGIT_(value)	std::uppercase << std::setw(1) << std::hex << value
+// Converts a value to a 4 wide hex digit address string
 #define _HEXADDRESS_(value) "0x" << std::uppercase << std::setfill('0') << std::setw(sizeof(uint16_t) * 2) << std::hex << value
 
 namespace DaveCPU {
 
 	/* MemoryViewer */
 
+	/*
+	 * Helper function to convert strings to wide strings.
+	 * @param str String to convert
+	 */
 	std::wstring convertString(std::string str) {
-		std::wstring wstr;
-		wstr.assign(str.begin(), str.end());
-		return wstr;
+		std::wstring wstring;
+		wstring.assign(str.begin(), str.end());
+		return wstring;
 	}
 
 	MemoryViewer::MemoryViewer()
@@ -23,96 +29,130 @@ namespace DaveCPU {
 		m_sAppName = convertString("DaveCPU");
 	}
 
-	void MemoryViewer::attach(DaveCPU::CPU* cpu)
+	/*
+	 * @param cpu CPU object to attach.
+	 */
+	void MemoryViewer::attachCPU(DaveCPU::CPU* cpu)
 	{
 		attachedCPU = cpu;
 	}
 
-	void MemoryViewer::drawMemoryWindow(int x, int y, MemoryWindow& memoryWindow)
+	/*
+	 * Displays a memory window.
+	 * @param x x-Coordinate of the window
+	 * @param y y-Coordinate of the window
+	 * @param memoryWindow Memory window to display
+	 */
+	void MemoryViewer::drawMemoryWindow(const int x, const int y, const MemoryWindow& memoryWindow)
 	{
 		std::stringstream sstream;
-		int currentX = x + 1, currentY = y + 1, col = 0;
+		auto currentX = x + 1, currentY = y + 1, col = 0;
 
+		// Show Name
 		DrawString(x + 1, y, convertString(memoryWindow.title));
 
-		for (int i = 0; i < memoryWindow.size(); i++) {
-			// Create string
-			uint16_t address = memoryWindow.getAddressOf(i);
-			uint16_t value = attachedCPU->bus.read(address);
+		for (auto i = 0; i < memoryWindow.size(); i++) {
+			// Get address and read value from bus
+			auto address = memoryWindow.getAddressOf(i);
+			auto value = attachedCPU->bus.read(address);
 
+			// If at beginning of line -> show address of first dword in line
 			if (col == 0) {
 				sstream << _HEXADDRESS_(address);
-				std::string addrStr = sstream.str();
+				auto addrStr = sstream.str();
 				sstream = std::stringstream();
-				DrawString(currentX, currentY, convertString(addrStr), COLOUR::BG_DARK_GREY + COLOUR::FG_BLACK);
+				DrawString(currentX, currentY, convertString(addrStr), BG_DARK_GREY + FG_BLACK);
 				currentX += addrStr.size();
-				DrawString(currentX, currentY, convertString(" | "), COLOUR::BG_BLACK + COLOUR::FG_DARK_CYAN);
+				DrawString(currentX, currentY, convertString(" | "), BG_BLACK + FG_DARK_CYAN);
 				currentX += 3;
 			}
 
+			// Value at memory address
 			sstream << _HEX_(value) << " ";
 
 			// Set colors
-			short cFG = COLOUR::FG_WHITE;
-			short cBG = COLOUR::BG_BLACK;
+			short cFG = FG_WHITE;
+			short cBG = BG_BLACK;
+			
+			// Color scheme for zero-valued memory data
 			if (value == 0x0000) {
-				cFG = COLOUR::FG_DARK_GREY;
-				cBG = COLOUR::BG_BLACK;
+				cFG = FG_DARK_GREY;
+				cBG = BG_BLACK;
 			}
+			// Color scheme for current instruction
 			if (address == attachedCPU->previousProgramCounter - attachedCPU->fetchingParameter) {
-				cBG = COLOUR::BG_DARK_GREEN;
+				cBG = BG_DARK_GREEN;
 			}
+			// Color scheme for recently fetched parameter
 			if (attachedCPU->fetchingParameter > 0 && address == attachedCPU->previousProgramCounter)
 			{
-				cBG = COLOUR::BG_DARK_YELLOW;
+				cBG = BG_DARK_YELLOW;
 			}
+			
 			// Draw string
-			std::string str = sstream.str();
+			auto str = sstream.str();
 			sstream = std::stringstream();
-			DrawString(currentX, currentY, convertString(str), cBG + cFG);
+			DrawString(currentX, currentY, convertString(str), cFG + cBG);
 
-			// Change drawing coordinates
+			// Advance drawing coordinates
 			currentX += str.size() + 1;
 			col++;
 			if (col == memoryWindow.dwordsPerLine) {
-				DrawString(currentX, currentY, convertString("|"), COLOUR::BG_BLACK + COLOUR::FG_DARK_CYAN);
+				// End of line delimiter
+				DrawString(currentX, currentY, convertString("|"), BG_BLACK + FG_DARK_CYAN);
 				currentX = x + 1;
 				currentY += 1;
 				col = 0;
 			}
-
 		}
 
-		int borderLength = 3 + memoryWindow.dwordsPerLine * 6;
-		int borderOffset = 8;
+		// Show borders of entire window
+		auto borderLength = 3 + memoryWindow.dwordsPerLine * 6;
+		auto borderOffset = 8;
 		sstream << "+";
-		for (int i = 1; i < borderLength - 1; i++) sstream << "-";
+		for (auto i = 1; i < borderLength - 1; i++) 
+			sstream << "-";
 		sstream << "+";
-		std::string horBorder = sstream.str();
-		sstream = std::stringstream();
+		auto horBorder = sstream.str();
 		DrawString(x + borderOffset, y, convertString(horBorder), COLOUR::BG_BLACK + COLOUR::FG_DARK_CYAN);
 		DrawString(x + borderOffset, currentY, convertString(horBorder), COLOUR::BG_BLACK + COLOUR::FG_DARK_CYAN);
 	}
 
-	void MemoryViewer::drawRegister(int x, int y, std::string registerName, uint16_t registerID) {
+	/*
+	 * Helper function to drawCPUState
+	 * Displays a single register value inside a CPU state window.
+	 * @param x x-Coordinate of the displayed register values
+	 * @param y y-Coordinate of the displayed register values
+	 * @param registerName Displayed name of the register
+	 * @param registerID CPU-internal id of the register to query its value
+	 */
+	void MemoryViewer::drawRegister(const int x, const int y, const std::string& registerName, const uint16_t registerID) {
+		// Name of register
+		const auto displayedName = registerName + ": ";
+		DrawString(x, y, convertString(displayedName), COLOUR::BG_BLACK + COLOUR::FG_GREEN);
+
+		// Hex value of register
 		std::stringstream sstream;
-		sstream << registerName << ": ";
-		DrawString(x, y, convertString(sstream.str()), COLOUR::BG_BLACK + COLOUR::FG_GREEN);
-		sstream = std::stringstream();
-
-		uint16_t regValue = attachedCPU->getRegister(registerID);
-
+		const auto regValue = attachedCPU->getRegister(registerID);
 		sstream << regValue << " (" << _HEX_(regValue) << ")";
 		DrawString(x + 5, y, convertString(sstream.str()));
 	}
 
-	void MemoryViewer::drawCPUState(int x, int y)
+	/*
+	 * Displays the internal state of the attached CPU object.
+	 * @param x x-Coordinate of the displayed state window
+	 * @param y y-Coordinate of the displayed state window
+	 */
+	void MemoryViewer::drawCPUState(const int x, const int y)
 	{
-		int currentX = x + 1, currentY = y + 1;
-		int header = 2;
+		auto currentX = x + 1, currentY = y + 1;
+		const auto header = 2;
 
+		// Last action the CPU performed
 		DrawString(currentX, currentY, convertString(attachedCPU->lastAction));
 		currentY += header;
+		
+		// All internal register values
 		drawRegister(currentX, currentY++, " pc", 0x01);
 		drawRegister(currentX, currentY++, "acc", 0x02);
 		drawRegister(currentX, currentY++, " sf", 0x00);
@@ -126,6 +166,8 @@ namespace DaveCPU {
 		drawRegister(currentX, currentY++, " am", 0x0A);
 		currentY = y + 1 + header;
 		currentX += 20;
+
+		// Data registers
 		for (uint16_t i = 0; i <= 15; i++) {
 			std::stringstream sstream;
 			sstream << " r" << _HEXDIGIT_(i);
@@ -141,19 +183,29 @@ namespace DaveCPU {
 		}
 	}
 
-	void MemoryViewer::setInstructionTime(double instructionTime)
+	/*
+	 * Sets the time each instruction takes, in seconds.
+	 */
+	void MemoryViewer::setInstructionTime(const double instructionTime)
 	{
 		this->instructionTime = instructionTime;
 		toNextInstruction = instructionTime;
 	}
 
-	bool MemoryViewer::OnUserCreate()
-	{
-		return true;
-	}
+	/*
+	 * Override from olcConsoleGameEngineOOP
+	 * Notifies the engine that the memory viewer has been created successfully.
+	 */
+	bool MemoryViewer::OnUserCreate() { return true; }
 
-	bool MemoryViewer::OnUserUpdate(float fElapsedTime)
+	/*
+	 * Override from olcConsoleGameEngineOOP
+	 * Is called every frame to update the memory viewer.
+	 * @param fElapsedTime Passed time in seconds since last OnUserUpdate call
+	 */
+	bool MemoryViewer::OnUserUpdate(const float fElapsedTime)
 	{
+		// Timing for when next action takes place
 		if (!attachedCPU->stopExecution) {
 			toNextInstruction -= fElapsedTime;
 			if (toNextInstruction <= 0) {
@@ -162,9 +214,8 @@ namespace DaveCPU {
 			}
 		}
 
+		// Draw everything
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ', COLOUR::BG_BLACK);
-		MemoryWindow eepromWindow(0x0000, 0x009F, 8, "EEPROM");
-		MemoryWindow ramWindow(0x2000, 0x209F, 8, "RAM");
 		drawMemoryWindow(4, 2, eepromWindow);
 		drawMemoryWindow(4, 24, ramWindow);
 		drawCPUState(72, 2);
@@ -174,7 +225,16 @@ namespace DaveCPU {
 
 	/* MemoryWindow */
 
-	MemoryWindow::MemoryWindow(uint16_t beginAddress, uint16_t endAddress, int dwordsPerLine = 8, std::string title = "")
+	/*
+	 * Creates a new memory window to peek into a specific part
+	 * of mapped memory.
+	 * @param beginAddress Start of the window
+	 * @param endAddress End of the window
+	 * @param dwordsPerLine Displayed number of data words per line
+	 * @param title Displayed name of the window
+	 */
+	MemoryWindow::MemoryWindow(const uint16_t beginAddress, const uint16_t endAddress, const int dwordsPerLine = 8, 
+		const std::string title = "")
 	{
 		this->beginAddress = beginAddress;
 		this->endAddress = endAddress;
@@ -182,12 +242,19 @@ namespace DaveCPU {
 		this->title = title;
 	}
 
-	int MemoryWindow::size()
+	/*
+	 * The size of the memory region this memory window covers.
+	 */
+	int MemoryWindow::size() const
 	{
 		return endAddress - beginAddress + 1;
 	}
 
-	uint16_t MemoryWindow::getAddressOf(uint16_t i)
+	/*
+	 * The absolute bus address of an index of this memory window.
+	 * @param i Index, counted relative from the begin address of the window
+	 */
+	uint16_t MemoryWindow::getAddressOf(const uint16_t i) const
 	{
 		if (i >= 0 && i < size())
 			return beginAddress + i;

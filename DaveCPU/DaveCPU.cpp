@@ -9,7 +9,7 @@
 namespace DaveCPU {
 
 	CPU* setupCPU() {
-		CPU* cpu = new CPU();
+		auto cpu = new CPU();
 
 		std::vector<uint16_t> program1{
 			0xF021, 0x2000,			// REL $0x2000
@@ -40,11 +40,16 @@ namespace DaveCPU {
 }
 
 int main() {
+	// Create a CPU instance and attach it to the memory viewer
 	DaveCPU::CPU* cpu = DaveCPU::setupCPU();
 	DaveCPU::MemoryViewer memoryViewer;
-	memoryViewer.attach(cpu);
-	memoryViewer.setInstructionTime(1);
+	memoryViewer.attachCPU(cpu);
+
+	// Setup
+	memoryViewer.setInstructionTime(0.6);
 	memoryViewer.ConstructConsole(160, 50, 8, 16);
+
+	// Starting the memory viewer, which in turn starts the CPU
 	memoryViewer.Start();
 
 	return 0;

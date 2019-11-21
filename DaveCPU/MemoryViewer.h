@@ -14,8 +14,8 @@ namespace DaveCPU {
 		std::string title = "";
 		MemoryWindow(uint16_t beginAddress, uint16_t endAddress, int dwordsPerLine, std::string title);
 
-		int size();
-		uint16_t getAddressOf(uint16_t i);
+		int size() const;
+		uint16_t getAddressOf(uint16_t i) const;
 	};
 
 	class MemoryViewer : public olcConsoleGameEngineOOP
@@ -25,18 +25,21 @@ namespace DaveCPU {
 		double toNextInstruction = 1;
 		double instructionTime = 1;
 
+		MemoryWindow eepromWindow = MemoryWindow(0x0000, 0x009F, 8, "EEPROM");
+		MemoryWindow ramWindow = MemoryWindow(0x2000, 0x209F, 8, "RAM");
+
 	public:
 
 		MemoryViewer();
 
-		void attach(DaveCPU::CPU* cpu);
-		void drawMemoryWindow(int x, int y, MemoryWindow& memoryWindow);
-		void drawRegister(int x, int y, std::string registerName, uint16_t registerID);
+		void attachCPU(DaveCPU::CPU* cpu);
+		void drawMemoryWindow(int x, int y, const MemoryWindow& memoryWindow);
+		void drawRegister(int x, int y, const std::string& registerName, uint16_t registerID);
 		void drawCPUState(int x, int y);
 		void setInstructionTime(double instructionTime);
 
-		virtual bool OnUserCreate();
-		virtual bool OnUserUpdate(float fElapsedTime);
+		bool OnUserCreate() override;
+		bool OnUserUpdate(float fElapsedTime) override;
 	};
 
 }

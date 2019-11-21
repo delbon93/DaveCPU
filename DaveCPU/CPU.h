@@ -21,18 +21,18 @@ namespace DaveCPU {
 		
 
 		/* Registers */
-		uint16_t rStatusFlags = 0;	// status flags
+		uint16_t rStatusFlags = 0;		// status flags
 		uint16_t rProgramCounter = 0;	// program counter
-		uint16_t rAccumulator = 0;	// accumulator
+		uint16_t rAccumulator = 0;		// accumulator
 		uint16_t rRelativeAddress = 0;	// relative address
-		uint16_t rFetch = 0;	// fetch
-		uint16_t rInstruction = 0;	// instruction word
-		uint16_t rParameter1 = 0;	// first parameter
-		uint16_t rParameter2 = 0;	// second parameter
-		uint16_t rAddressMode = 0;	// address modes
+		uint16_t rFetch = 0;			// fetch
+		uint16_t rInstruction = 0;		// instruction word
+		uint16_t rParameter1 = 0;		// first parameter
+		uint16_t rParameter2 = 0;		// second parameter
+		uint16_t rAddressMode = 0;		// address modes
 		uint16_t rReturnAddress = 0;	// return address
 		uint16_t rStackFrameOffset = 0;	// stack frame offset
-		uint16_t rDataRegisters[16];		// data registers
+		uint16_t rDataRegisters[16];	// data registers
 
 		CPU();
 
@@ -55,7 +55,7 @@ namespace DaveCPU {
 
 		/* Helper Functions */
 
-		uint8_t getAddressMode(uint8_t param);
+		uint8_t getAddressMode(uint8_t param) const;
 		uint16_t addAndSetCarry(int a, int b);
 
 		uint16_t getRegister(uint16_t registerCode);
@@ -63,10 +63,10 @@ namespace DaveCPU {
 		void jump();
 
 		/* Status Flag Query */
-		bool isZeroSet();
-		bool isSignSet();
-		bool isOverflowSet();
-		bool isCarrySet();
+		bool isZeroSet() const;
+		bool isSignSet() const;
+		bool isOverflowSet() const;
+		bool isCarrySet() const;
 
 		/* Opcodes */
 
