@@ -57,7 +57,7 @@ int main() {
 
 	// Setup
 	memoryViewer.setInstructionTime(0.25);
-	memoryViewer.ConstructConsole(160, 50, 8, 16);
+	memoryViewer.ConstructConsole(108, 25, 8, 16);
 
 	// Starting the memory viewer, which in turn starts the CPU
 	memoryViewer.Start();

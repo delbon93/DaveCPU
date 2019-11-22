@@ -25,8 +25,8 @@ namespace DaveCPU {
 		double toNextInstruction = 1;
 		double instructionTime = 1;
 
-		MemoryWindow eepromWindow = MemoryWindow(0x0000, 0x009F, 8, "EEPROM");
-		MemoryWindow ramWindow = MemoryWindow(0x2000, 0x209F, 8, "RAM");
+		MemoryWindow eepromWindow = MemoryWindow(0x0000, 0x004F, 8, "EEPROM");
+		MemoryWindow ramWindow = MemoryWindow(0x2000, 0x204F, 8, "RAM");
 
 	public:
 

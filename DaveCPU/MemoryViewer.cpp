@@ -153,7 +153,7 @@ namespace DaveCPU {
 
 		// Passed cycles
 		auto sstream = std::stringstream();
-		sstream << "Cycles: " << attachedCPU->cycles;
+		sstream << "Clock cycles: " << attachedCPU->cycles;
 		DrawString(currentX + 20, currentY, convertString(sstream.str()));
 		currentY += header;
 		
@@ -177,10 +177,12 @@ namespace DaveCPU {
 			sstream = std::stringstream();
 			sstream << " r" << _HEXDIGIT_(i);
 			drawRegister(currentX, currentY++, sstream.str(), 0x10 + i);
+			/*
 			if (i == 7) {
 				currentY = y + 1 + header;
 				currentX += 20;
 			}
+			*/
 		}
 
 		if (attachedCPU->stopExecution) {
@@ -221,9 +223,9 @@ namespace DaveCPU {
 
 		// Draw everything
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ', COLOUR::BG_BLACK);
-		drawMemoryWindow(4, 2, eepromWindow);
-		drawMemoryWindow(4, 24, ramWindow);
-		drawCPUState(72, 2);
+		drawMemoryWindow(1, 1, eepromWindow);
+		drawMemoryWindow(1, 12, ramWindow);
+		drawCPUState(62, 1);
 
 		return true;
 	}
