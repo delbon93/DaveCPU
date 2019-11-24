@@ -9,7 +9,7 @@
 .program {
 	.entry { //entry point for program
 		LTA		10;
-		LTR		rA, $0x2000;	"test"
+		LTR		rA  $0x2000;	"test"
 		/* this
 section is
 		commented

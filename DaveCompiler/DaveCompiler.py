@@ -1,4 +1,6 @@
 import re
+import struct
+import InstructionCompiler as inscomp
 
 precomp_subs = {}
 data_definitions = []
@@ -67,4 +69,37 @@ def sequence(file_name):
     #else:
     #    print("Not validated :c")
 
-sequence("test.asm")
+def write_to_binary_file(binary_data, file_name):
+    if not file_name.endswith(".bin"):
+        file_name += ".bin"
+    with open(file_name, "wb") as file:
+        for word in binary_data:
+            file.write(word.to_bytes(2, byteorder="big"))
+
+def repl():
+    user_input = ""
+    print(" << INSTRUCTION PARSER >>")
+    binary_data = []
+    while user_input.lower() not in ["exit", "quit", "q"]:
+        user_input = input("$ ")
+        if user_input in ["exit", "quit", "q"]:
+            pass
+        elif user_input in ["list"]:
+            print(["0x%4x" % w for w in binary_data])
+        elif user_input.startswith("out"):
+            file_name = user_input.split(" ")[1]
+            write_to_binary_file(binary_data, file_name)
+            print("Saved %d words (%d bytes) to file '%s'" % (len(binary_data), len(binary_data) * 2, file_name))
+        else:
+            data = [d.lower() for d in tokenize(user_input)]
+            parse_result = inscomp.parse_instruction(data)
+            if not parse_result[1]:
+                print(parse_result[2])
+            else:
+                print(parse_result[0])
+                print(parse_result[0].construct(True))
+                binary_data  += parse_result[0].construct(False)
+
+if __name__ == "__main__":
+    #sequence("test.asm")
+    repl()
