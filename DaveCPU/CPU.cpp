@@ -128,17 +128,18 @@ namespace DaveCPU {
 	uint16_t CPU::getRegister(const uint16_t registerCode)
 	{
 		switch (registerCode) {
-		case 0: return rStatusFlags;
-		case 1: return rProgramCounter;
-		case 2: return rAccumulator;
-		case 3: return rRelativeAddress;
-		case 4: return rFetch;
-		case 5: return rInstruction;
-		case 6: return rParameter1;
-		case 7: return rParameter2;
-		case 8: return rReturnAddress;
-		case 9: return rStackFrameOffset;
-		case 10: return rAddressMode;
+		case 0x0: return rStatusFlags;
+		case 0x1: return rProgramCounter;
+		case 0x2: return rAccumulator;
+		case 0x3: return rRelativeAddress;
+		case 0x4: return rFetch;
+		case 0x5: return rInstruction;
+		case 0x6: return rParameter1;
+		case 0x7: return rParameter2;
+		case 0x8: return rReturnAddress;
+		case 0x9: return rStackFrameOffset;
+		case 0xA: return rAddressMode;
+		case 0xB: case 0xC: case 0xD: case 0xE: return rInternal[registerCode - 0xB];
 		default:
 			if (registerCode >= 0x10 && registerCode <= 0x1F) return rDataRegisters[registerCode - 0x10];
 			else return 0;
@@ -148,17 +149,18 @@ namespace DaveCPU {
 	void CPU::setRegister(const uint16_t registerCode, const uint16_t data)
 	{
 		switch (registerCode) {
-		case 0: rStatusFlags = data; break;
-		case 1: rProgramCounter = data; break;
-		case 2: rAccumulator = data; break;
-		case 3: rRelativeAddress = data; break;
-		case 4: rFetch = data; break;
-		case 5: rInstruction = data; break;
-		case 6: rParameter1 = data; break;
-		case 7: rParameter2 = data; break;
-		case 8: rReturnAddress = data; break;
-		case 9: rStackFrameOffset = data; break;
-		case 10: rAddressMode = data; break;
+		case 0x0: rStatusFlags = data; break;
+		case 0x1: rProgramCounter = data; break;
+		case 0x2: rAccumulator = data; break;
+		case 0x3: rRelativeAddress = data; break;
+		case 0x4: rFetch = data; break;
+		case 0x5: rInstruction = data; break;
+		case 0x6: rParameter1 = data; break;
+		case 0x7: rParameter2 = data; break;
+		case 0x8: rReturnAddress = data; break;
+		case 0x9: rStackFrameOffset = data; break;
+		case 0xA: rAddressMode = data; break;
+		case 0xB: case 0xC: case 0xD: case 0xE: rInternal[registerCode - 0xB] = data;
 		default:
 			if (registerCode >= 0x10 && registerCode <= 0x1F) rDataRegisters[registerCode - 0x10] = data;
 			else return;
