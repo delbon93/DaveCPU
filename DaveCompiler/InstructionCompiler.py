@@ -22,11 +22,12 @@ register_codes = {
 
 class Parameter:
 
-    def __init__(self, word, type, label = "", is_label = False):
+    def __init__(self, word, type, am=0, label="", is_label=False):
         self.word = word
         self.label = label
         self.type = type
         self.needs_label_subsitution = is_label
+        self.address_mode = am
 
     def __str__(self):
         if self.needs_label_subsitution:
@@ -38,14 +39,18 @@ class Instruction:
 
     def __init__(self, op_code):
         self.op_code = op_code
-        self.am1 = 0
-        self.am2 = 0
         self.parameters = []
+
+    def _am(self, i):
+        if len(self.parameters) >= i:
+            return self.parameters[i-1].address_mode
+        else:
+            return 0
 
     def construct(self, as_string=False):
         ins = self.op_code * 256
-        ins += self.am1 * 32
-        ins += self.am2 * 4
+        ins += self._am(1) * 32
+        ins += self._am(2) * 4
         ins += len(self.parameters)
         ins = "%x" % ins
         ins = int("%s%s" % ("0" * (4 - len(ins)), ins), 16)
@@ -53,6 +58,7 @@ class Instruction:
         data = [ins]
         for parameter in self.parameters:
             data.append(parameter.word)
+            
 
         if as_string:
             return ["0x%4x" % w for w in data]
@@ -62,10 +68,6 @@ class Instruction:
     def length(self):
         return 1 + len(self.parameters)
 
-    def set_address_modes(self, address_modes):
-        self.am1 = address_modes[0]
-        self.am2 = address_modes[1]
-
     def __str__(self):
         name = "undefined"
         for key in op_codes.keys():
@@ -73,7 +75,7 @@ class Instruction:
                 name = key.upper()
                 break
 
-        str = "OpCode=0x%x (%s), Address Modes = %d | %d" % (self.op_code, name, self.am1, self.am2)
+        str = "OpCode=0x%x (%s), Address Modes = %d | %d" % (self.op_code, name, self._am(1), self._am(2))
         i = 1
         for parameter in self.parameters:
             str += "\n%d. Parameter: %s" % (i, parameter)
@@ -82,7 +84,7 @@ class Instruction:
 
 
 def _is_immediate(value):
-    if value.startswith("0x") or value.startswith("0b"):
+    if value.startswith("0x") or value.startswith("0b") or value == "0":
         return True
     return value.isdigit()
 
@@ -149,13 +151,20 @@ def parse_instruction(ins_tokens):
 
         parameter_type, parameter_value = _get_parameter_type_and_value(p)
         parameter_object = Parameter(parameter_value, parameter_type)
+        
+        
+
         if parameter_type == "label":
             parameter_object.label = parameter_value
             parameter_object.word = 0
             parameter_object.needs_label_subsitution = True
-        address_modes[parameter_count - 1] = _get_address_mode(op_code, parameter_count, parameter_type)
+        else:
+            try:
+                parameter_object.address_mode = _get_address_mode(op_code, parameter_count, parameter_type)
+            except:
+                print("Invalid address mode:\nop_code=%d, p_count=%d, p_type=%s" % (op_code, parameter_count, parameter_type))
+                parameter_object.address_mode = 0
 
         instruction_object.parameters.append(parameter_object)
 
-    instruction_object.set_address_modes(address_modes)
     return (instruction_object, success, error)

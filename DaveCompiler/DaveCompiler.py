@@ -48,7 +48,7 @@ def validate(token_list):
     return True
 
 
-def sequence(file_name):
+def compilePipeline(file_name):
     with open(file_name, "r") as file:
         text = file.read()
 
@@ -101,5 +101,5 @@ def repl():
                 binary_data  += parse_result[0].construct(False)
 
 if __name__ == "__main__":
-    #sequence("test.asm")
+    #compilePipeline("test.asm")
     repl()
