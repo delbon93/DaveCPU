@@ -35,6 +35,12 @@
     <Compile Include="InstructionCompiler.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="REPL.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Pipeline.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="test.asm" />

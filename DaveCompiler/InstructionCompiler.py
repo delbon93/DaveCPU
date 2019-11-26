@@ -26,11 +26,13 @@ class Parameter:
         self.word = word
         self.label = label
         self.type = type
-        self.needs_label_subsitution = is_label
+        self.needs_label_substitution = is_label
         self.address_mode = am
+        self.number = 1
+        self.op_code = 0
 
     def __str__(self):
-        if self.needs_label_subsitution:
+        if self.needs_label_substitution:
             return "Label = %s, Type = %s [requires label substitution]" % (self.label, self.type)
         else:
             return "Word = 0x%x, Type = %s" % (self.word, self.type)
@@ -75,10 +77,10 @@ class Instruction:
                 name = key.upper()
                 break
 
-        str = "OpCode=0x%x (%s), Address Modes = %d | %d" % (self.op_code, name, self._am(1), self._am(2))
+        str = "%s (0x%x), Address Modes = %d | %d" % (name, self.op_code, self._am(1), self._am(2))
         i = 1
         for parameter in self.parameters:
-            str += "\n%d. Parameter: %s" % (i, parameter)
+            str += "\n\t%d. Parameter: %s" % (i, parameter)
             i += 1
         return str
 
@@ -133,6 +135,17 @@ def _get_address_mode(op_code, parameter_number, parameter_type):
     else:
         return 0
 
+def replace_label(parameter, label, replacement):
+    if not (parameter.needs_label_substitution and parameter.label == label):
+        return False
+    parameter_type, parameter_value = _get_parameter_type_and_value(replacement)
+    parameter.word = parameter_value
+    parameter.type = parameter_type
+    parameter.address_mode = _get_address_mode(parameter.op_code, parameter.number, parameter_type)
+    parameter.needs_label_substitution = False
+    return True
+    
+
 def parse_instruction(ins_tokens):
     success = True
     error = ""
@@ -151,13 +164,13 @@ def parse_instruction(ins_tokens):
 
         parameter_type, parameter_value = _get_parameter_type_and_value(p)
         parameter_object = Parameter(parameter_value, parameter_type)
+        parameter_object.number = parameter_count
+        parameter_object.op_code = op_code
         
-        
-
         if parameter_type == "label":
             parameter_object.label = parameter_value
             parameter_object.word = 0
-            parameter_object.needs_label_subsitution = True
+            parameter_object.needs_label_substitution = True
         else:
             try:
                 parameter_object.address_mode = _get_address_mode(op_code, parameter_count, parameter_type)

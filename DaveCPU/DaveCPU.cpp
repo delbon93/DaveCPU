@@ -9,7 +9,7 @@
 
 namespace DaveCPU {
 
-	CPU* setupCPU() {
+	CPU* setupCPU(const std::string& programFileName) {
 		auto cpu = new CPU();
         /*
 		std::vector<uint16_t> program1{
@@ -41,7 +41,7 @@ namespace DaveCPU {
 			0xFF00					// RTN
 		};
         */
-        std::vector<uint16_t> program = loadProgramFromFile("../compiled_programs/mul_4_sub_3_abs.bin");
+        std::vector<uint16_t> program = loadProgramFromFile(programFileName);
 		std::vector<uint16_t> data{ 0x0005 };
 
 		cpu->bus.eeprom.flash(program);
@@ -51,9 +51,13 @@ namespace DaveCPU {
 	}
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    std::string programFileName;
+    if (argc > 1) {
+        programFileName = std::string(argv[1]);
+    }
 	// Create a CPU instance and attach it to the memory viewer
-	DaveCPU::CPU* cpu = DaveCPU::setupCPU();
+	DaveCPU::CPU* cpu = DaveCPU::setupCPU(programFileName);
 	DaveCPU::MemoryViewer memoryViewer;
 	memoryViewer.attachCPU(cpu);
 
