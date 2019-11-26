@@ -59,5 +59,8 @@
     <ClInclude Include="olcConsoleGameEngineOOP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="LoadProgram.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

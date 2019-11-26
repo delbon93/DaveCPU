@@ -288,6 +288,7 @@
     <ClInclude Include="BusComponent.h" />
     <ClInclude Include="CPU.h" />
     <ClInclude Include="EEPROM.h" />
+    <ClInclude Include="LoadProgram.h" />
     <ClInclude Include="MemoryViewer.h" />
     <ClInclude Include="olcConsoleGameEngineOOP.h" />
     <ClInclude Include="RAM.h" />

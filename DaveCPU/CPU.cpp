@@ -228,10 +228,45 @@ namespace DaveCPU {
 		else if (getAddressMode(1) == 2) rAccumulator = addAndSetCarry(data, getRegister(rParameter2));
 	}
 
-	void CPU::SUB() {}
-	void CPU::MUL() {}
-	void CPU::DIV() {}
-	void CPU::MOD() {}
+	void CPU::SUB() {
+        uint16_t data = 0;
+        if (getAddressMode(0) == 1) data = rParameter1;
+        else if (getAddressMode(0) == 2) data = getRegister(rParameter1);
+
+        if (getAddressMode(1) == 0) rAccumulator = (rAccumulator - data);
+        else if (getAddressMode(1) == 1) rAccumulator = (data - rParameter2);
+        else if (getAddressMode(1) == 2) rAccumulator = (data - getRegister(rParameter2));
+    }
+
+	void CPU::MUL() {
+        uint16_t data = 0;
+        if (getAddressMode(0) == 1) data = rParameter1;
+        else if (getAddressMode(0) == 2) data = getRegister(rParameter1);
+
+        if (getAddressMode(1) == 0) rAccumulator = (rAccumulator * data);
+        else if (getAddressMode(1) == 1) rAccumulator = (data * rParameter2);
+        else if (getAddressMode(1) == 2) rAccumulator = (data * getRegister(rParameter2));
+    }
+
+	void CPU::DIV() {
+        uint16_t data = 0;
+        if (getAddressMode(0) == 1) data = rParameter1;
+        else if (getAddressMode(0) == 2) data = getRegister(rParameter1);
+
+        if (getAddressMode(1) == 0) rAccumulator = (rAccumulator / data);
+        else if (getAddressMode(1) == 1) rAccumulator = (data / rParameter2);
+        else if (getAddressMode(1) == 2) rAccumulator = (data / getRegister(rParameter2));
+    }
+
+	void CPU::MOD() {
+        uint16_t data = 0;
+        if (getAddressMode(0) == 1) data = rParameter1;
+        else if (getAddressMode(0) == 2) data = getRegister(rParameter1);
+
+        if (getAddressMode(1) == 0) rAccumulator = (rAccumulator % data);
+        else if (getAddressMode(1) == 1) rAccumulator = (data % rParameter2);
+        else if (getAddressMode(1) == 2) rAccumulator = (data % getRegister(rParameter2));
+    }
 
 	void CPU::INC() {
 		if (getAddressMode(0) == 0) rAccumulator++;

@@ -5,12 +5,13 @@
 #include "Bus.h"
 #include "CPU.h"
 #include "MemoryViewer.h"
+#include "LoadProgram.h"
 
 namespace DaveCPU {
 
 	CPU* setupCPU() {
 		auto cpu = new CPU();
-
+        /*
 		std::vector<uint16_t> program1{
 			0xF021, 0x2000,			// REL $0x2000
 			0x0161, 0x0000,			// LTA &0
@@ -39,10 +40,11 @@ namespace DaveCPU {
 			0x034A, 0x0000, 0x001D, // STM &0, rD
 			0xFF00					// RTN
 		};
+        */
+        std::vector<uint16_t> program = loadProgramFromFile("../compiled_programs/mul_4_sub_3_abs.bin");
+		std::vector<uint16_t> data{ 0x0005 };
 
-		std::vector<uint16_t> data{ };
-
-		cpu->bus.eeprom.flash(program3);
+		cpu->bus.eeprom.flash(program);
 		cpu->bus.ram.writeBulk(0x2000, data);
 
 		return cpu;
