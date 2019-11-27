@@ -74,5 +74,8 @@
     <ClInclude Include="Terminal.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="ConsoleConfig.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

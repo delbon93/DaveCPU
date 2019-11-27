@@ -7,6 +7,7 @@
 #include "MemoryViewer.h"
 #include "LoadProgram.h"
 #include "Terminal.h"
+#include "ConsoleConfig.h"
 
 namespace DaveCPU {
 
@@ -41,7 +42,7 @@ int main(int argc, char* argv[]) {
     memoryViewer.attachTerminal(&terminal);
 
 	// Starting the memory viewer, which in turn starts the CPU
-	memoryViewer.ConstructConsole(188, 37, 6, 12);
+	memoryViewer.ConstructConsole(188, 37, CHAR_SIZE_SCALE(4), CHAR_SIZE_SCALE(8));
 	memoryViewer.Start();
 
 	return 0;

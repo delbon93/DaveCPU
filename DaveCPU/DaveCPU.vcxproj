@@ -288,6 +288,7 @@
   <ItemGroup>
     <ClInclude Include="Bus.h" />
     <ClInclude Include="BusComponent.h" />
+    <ClInclude Include="ConsoleConfig.h" />
     <ClInclude Include="CPU.h" />
     <ClInclude Include="EEPROM.h" />
     <ClInclude Include="LoadProgram.h" />
