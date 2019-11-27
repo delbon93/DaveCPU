@@ -282,6 +282,7 @@
     <ClCompile Include="MemoryViewer.cpp" />
     <ClCompile Include="olcConsoleGameEngineOOP.cpp" />
     <ClCompile Include="RAM.cpp" />
+    <ClCompile Include="TerminalScreenBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bus.h" />
@@ -292,6 +293,7 @@
     <ClInclude Include="MemoryViewer.h" />
     <ClInclude Include="olcConsoleGameEngineOOP.h" />
     <ClInclude Include="RAM.h" />
+    <ClInclude Include="TerminalScreenBuffer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

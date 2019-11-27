@@ -17,12 +17,12 @@ namespace DaveCPU {
 		if (address >= EEPROM_BEGIN && address <= EEPROM_END) { // EEPROM
 			return eeprom;
 		}
-		else {// if (address >= RAM_BEGIN && address <= RAM_END) { // RAM
+		else if (address >= RAM_BEGIN && address <= RAM_END) { // RAM
 			return ram;
-		}/*
+		}
 		else if (address >= VRAM_BEGIN && address <= VRAM_END) { // Screen Buffer
-			return 0;
-		}*/
+			return screenBuffer;
+		}
 	}
 
 	uint16_t Bus::read(uint16_t address)

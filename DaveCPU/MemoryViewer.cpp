@@ -225,6 +225,7 @@ namespace DaveCPU {
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ', COLOUR::BG_BLACK);
 		drawMemoryWindow(1, 1, eepromWindow);
 		drawMemoryWindow(1, 12, ramWindow);
+        drawMemoryWindow(1, 23, vramWindow);
 		drawCPUState(62, 1);
 
 		return true;

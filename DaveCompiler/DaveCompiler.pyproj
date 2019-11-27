@@ -4,7 +4,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0ead6c38-7b22-425e-b26e-194e1806a883</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>DaveCompiler.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

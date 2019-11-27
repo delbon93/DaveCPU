@@ -27,6 +27,7 @@ namespace DaveCPU {
 
 		MemoryWindow eepromWindow = MemoryWindow(0x0000, 0x004F, 8, "EEPROM");
 		MemoryWindow ramWindow = MemoryWindow(0x2000, 0x204F, 8, "RAM");
+        MemoryWindow vramWindow = MemoryWindow(0xA000, 0xA04F, 8, "VRAM");
 
 	public:
 

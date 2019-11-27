@@ -52,7 +52,7 @@ namespace DaveCPU {
 }
 
 int main(int argc, char* argv[]) {
-    std::string programFileName;
+    std::string programFileName = "../compiled_programs/default.bin";
     if (argc > 1) {
         programFileName = std::string(argv[1]);
     }
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
 	// Setup
 	memoryViewer.setInstructionTime(0.25);
-	memoryViewer.ConstructConsole(108, 25, 8, 16);
+	memoryViewer.ConstructConsole(108, 37, 8, 16);
 
 	// Starting the memory viewer, which in turn starts the CPU
 	memoryViewer.Start();

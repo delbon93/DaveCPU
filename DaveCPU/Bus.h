@@ -2,6 +2,7 @@
 #include <string>
 #include "RAM.h"
 #include "EEPROM.h"
+#include "TerminalScreenBuffer.h"
 
 #define EEPROM_BEGIN	0x0000
 #define EEPROM_END		0x1FFF
@@ -21,6 +22,7 @@ namespace DaveCPU {
 
 		EEPROM eeprom;
 		RAM ram;
+        TerminalScreenBuffer screenBuffer;
 
 		BusComponent& getMappedComponent(uint16_t address);
 		uint16_t read(uint16_t address);
