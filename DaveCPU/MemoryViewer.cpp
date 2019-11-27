@@ -213,7 +213,16 @@ namespace DaveCPU {
             }
         }
         DrawString(x, y, horBorder, borderCol);
-        DrawString(x, y + 26, horBorder, borderCol);
+        DrawString(x, y + 25, horBorder, borderCol);
+        x++;
+        y++;
+
+        // Draw terminal contents
+        for (int _y = 0; _y < 24; _y++) {
+            for (int _x = 0; _x < 80; _x++) {
+                Draw(x + _x, y + _y, attachedTerminal->get(_x, _y));
+            }
+        }
     }
 
 	/*
@@ -246,6 +255,9 @@ namespace DaveCPU {
 				attachedCPU->clockCycle();
 			}
 		}
+
+        // Update terminal
+        attachedTerminal->Update(fElapsedTime);
 
 		// Draw everything
 		Fill(0, 0, ScreenWidth(), ScreenHeight(), L' ', COLOUR::BG_BLACK);
