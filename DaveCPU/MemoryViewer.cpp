@@ -37,6 +37,11 @@ namespace DaveCPU {
 		attachedCPU = cpu;
 	}
 
+    void MemoryViewer::attachTerminal(DaveCPU::Terminal* terminal)
+    {
+        attachedTerminal = terminal;
+    }
+
 	/*
 	 * Displays a memory window.
 	 * @param x x-Coordinate of the window
@@ -190,6 +195,27 @@ namespace DaveCPU {
 		}
 	}
 
+    void MemoryViewer::drawTerminal(int x, int y)
+    {
+        if (attachedTerminal == nullptr) return;
+        // Draw border
+        DrawString(x, y, L"TERMINAL", BG_GREY + FG_BLACK);
+        y++;
+        auto borderCol = BG_BLACK + FG_DARK_CYAN;
+        std::wstring horBorder = L"";
+        for (int i = 0; i < 82; i++) {
+            if (i == 0 || i == 81)
+                horBorder += L'+';
+            else horBorder += L'-';
+            if (i < 26) {
+                Draw(x, y + i, L'|', borderCol);
+                Draw(x + 81, y + i, L'|', borderCol);
+            }
+        }
+        DrawString(x, y, horBorder, borderCol);
+        DrawString(x, y + 26, horBorder, borderCol);
+    }
+
 	/*
 	 * Sets the time each instruction takes, in seconds.
 	 */
@@ -227,6 +253,7 @@ namespace DaveCPU {
 		drawMemoryWindow(1, 12, ramWindow);
         drawMemoryWindow(1, 23, vramWindow);
 		drawCPUState(62, 1);
+        drawTerminal(102, 1);
 
 		return true;
 	}

@@ -12,5 +12,6 @@ namespace DaveCPU {
         TerminalScreenBuffer();
         uint16_t read(uint16_t address) override;
         void write(uint16_t address, uint16_t data) override;
+        uint16_t get(uint16_t index);
     };
 }

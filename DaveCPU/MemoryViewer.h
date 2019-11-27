@@ -1,6 +1,7 @@
 #pragma once
 #include "olcConsoleGameEngineOOP.h"
 #include "CPU.h"
+#include "Terminal.h"
 
 namespace DaveCPU {
 
@@ -21,7 +22,9 @@ namespace DaveCPU {
 	class MemoryViewer : public olcConsoleGameEngineOOP
 	{
 	private:
-		DaveCPU::CPU* attachedCPU;
+		CPU* attachedCPU;
+        Terminal* attachedTerminal;
+
 		double toNextInstruction = 1;
 		double instructionTime = 1;
 
@@ -34,9 +37,11 @@ namespace DaveCPU {
 		MemoryViewer();
 
 		void attachCPU(DaveCPU::CPU* cpu);
+        void attachTerminal(DaveCPU::Terminal* terminal);
 		void drawMemoryWindow(int x, int y, const MemoryWindow& memoryWindow);
 		void drawRegister(int x, int y, const std::string& registerName, uint16_t registerID);
 		void drawCPUState(int x, int y);
+        void drawTerminal(int x, int y);
 		void setInstructionTime(double instructionTime);
 
 		bool OnUserCreate() override;

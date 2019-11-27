@@ -18,3 +18,10 @@ void DaveCPU::TerminalScreenBuffer::write(uint16_t address, uint16_t data)
     if (index >= 0 && index < 0x1000)
         memory[index] = data;
 }
+
+uint16_t DaveCPU::TerminalScreenBuffer::get(uint16_t index)
+{
+    if (index < memory.size())
+        return memory[index];
+    else return 0;
+}
