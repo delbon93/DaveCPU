@@ -6,6 +6,7 @@
 #include "CPU.h"
 #include "MemoryViewer.h"
 #include "LoadProgram.h"
+#include "Terminal.h"
 
 namespace DaveCPU {
 
@@ -22,20 +23,25 @@ namespace DaveCPU {
 }
 
 int main(int argc, char* argv[]) {
-    std::string programFileName;
+    //Load the program to be flashed into EEPROM
+    std::string programFileName = "../compiled_programs/default.bin";
     if (argc > 1) {
         programFileName = std::string(argv[1]);
     }
-	// Create a CPU instance and attach it to the memory viewer
+
+	// Create a CPU instance and attach it to the memory viewer, create a terminal window
 	DaveCPU::CPU* cpu = DaveCPU::setupCPU(programFileName);
 	DaveCPU::MemoryViewer memoryViewer;
-	memoryViewer.attachCPU(cpu);
+    DaveCPU::Terminal terminal;
 
 	// Setup
-	memoryViewer.setInstructionTime(0.25);
-	memoryViewer.ConstructConsole(108, 25, 8, 16);
+	memoryViewer.setInstructionTime(0.025);
+    terminal.attachScreenBuffer(&(cpu->bus.screenBuffer));
+	memoryViewer.attachCPU(cpu);
+    memoryViewer.attachTerminal(&terminal);
 
 	// Starting the memory viewer, which in turn starts the CPU
+	memoryViewer.ConstructConsole(188, 37, 6, 12);
 	memoryViewer.Start();
 
 	return 0;
